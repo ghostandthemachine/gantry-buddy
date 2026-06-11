@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <Preferences.h>
+#include "branding.h"
 
 // Header-only with file-static state: include from exactly one translation
 // unit (main.cpp). Including from a second .cpp produces duplicate symbols.
@@ -210,7 +211,7 @@ inline void settingsSave() {
   _prefs.end();
 }
 
-static char _petName[24] = "Buddy";
+static char _petName[24] = GANTRY_DEFAULT_PET_NAME;
 static char _ownerName[32] = "";
 
 inline void petNameLoad() {

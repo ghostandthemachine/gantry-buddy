@@ -4,17 +4,18 @@
 #include "ble_bridge.h"
 #include "data.h"
 #include "buddy.h"
+#include "branding.h"
 
 TFT_eSprite spr = TFT_eSprite(&M5.Lcd);
 
-// Advertise as "Claude-XXXX" (last two BT MAC bytes) so multiple sticks
-// in one room are distinguishable in the desktop picker. Name persists in
-// btName for the BLUETOOTH info page.
-static char btName[16] = "Claude";
+// Advertise with Claude's required compatibility prefix plus a Gantry suffix
+// so multiple sticks in one room are distinguishable in the desktop picker.
+// Name persists in btName for the BLUETOOTH info page.
+static char btName[16] = GANTRY_BLE_PREFIX;
 static void startBt() {
   uint8_t mac[6] = {0};
   esp_read_mac(mac, ESP_MAC_BT);
-  snprintf(btName, sizeof(btName), "Claude-%02X%02X", mac[4], mac[5]);
+  snprintf(btName, sizeof(btName), GANTRY_BLE_PREFIX "%02X%02X", mac[4], mac[5]);
   bleInit(btName);
 }
 
@@ -541,10 +542,10 @@ void drawInfo() {
   };
 
   if (infoPage == 0) {
-    _infoHeader(p, y, "ABOUT", infoPage);
+    _infoHeader(p, y, "GANTRY", infoPage);
     spr.setTextColor(p.textDim, p.bg);
-    ln("I watch your Claude");
-    ln("desktop sessions.");
+    ln("I watch your Gantry");
+    ln("and Claude sessions.");
     y += 6;
     ln("I sleep when nothing's");
     ln("happening, wake when");
@@ -575,7 +576,7 @@ void drawInfo() {
     ln("    hold 6s = off");
 
   } else if (infoPage == 2) {
-    _infoHeader(p, y, "CLAUDE", infoPage);
+    _infoHeader(p, y, "SESSION", infoPage);
     spr.setTextColor(p.textDim, p.bg);
     ln("  sessions  %u", tama.sessionsTotal);
     ln("  running   %u", tama.sessionsRunning);
@@ -667,17 +668,17 @@ void drawInfo() {
   } else {
     _infoHeader(p, y, "CREDITS", infoPage);
     spr.setTextColor(p.textDim, p.bg);
-    ln("made by");
+    ln("forked for");
     y += 4;
     spr.setTextColor(p.text, p.bg);
-    ln("Felix Rieseberg");
+    ln(GANTRY_PRODUCT_NAME);
     y += 12;
     spr.setTextColor(p.textDim, p.bg);
     ln("source");
     y += 4;
     spr.setTextColor(p.text, p.bg);
-    ln("github.com/anthropics");
-    ln("/claude-desktop-buddy");
+    ln("github.com/" GANTRY_SOURCE_OWNER);
+    ln("/" GANTRY_SOURCE_REPO);
     y += 12;
     spr.setTextColor(p.textDim, p.bg);
     ln("hardware");
@@ -972,10 +973,10 @@ void setup() {
       spr.setTextColor(p.body, p.bg);   spr.drawString(petName(), W/2, H/2 + 12);
     } else {
       // First boot, no owner pushed yet — say hi.
-      spr.setTextColor(p.body, p.bg);   spr.drawString("Hello!", W/2, H/2 - 12);
+      spr.setTextColor(p.body, p.bg);   spr.drawString("Gantry", W/2, H/2 - 12);
       spr.setTextSize(1);
       spr.setTextColor(p.textDim, p.bg);
-      spr.drawString("a buddy appears", W/2, H/2 + 12);
+      spr.drawString("buddy online", W/2, H/2 + 12);
     }
     spr.setTextDatum(TL_DATUM); spr.setTextSize(1);
     spr.pushSprite(0, 0);
